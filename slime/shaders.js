@@ -43,7 +43,7 @@ fn main(@builtin(global_invocation_id) gid : vec3u) {
     let cy = f32(params.sizeY) * 0.5;
 
     // Uniform distribution within circle: r = R * sqrt(rand), theta = rand * 2π
-    let r     = 200.0 * sqrt(randomFloat(hash(params.seed + i * 2u)));
+    let r     = 10.0 * sqrt(randomFloat(hash(params.seed + i * 2u)));
     let theta = randomFloat(hash(params.seed + i * 2u + 1u)) * 6.28318530;
 
     let px = cx + r * cos(theta);

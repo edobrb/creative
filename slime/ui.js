@@ -45,17 +45,9 @@ export function buildUI(container, settings, stats) {
             },
         },
         {
-            label: 'Reset colors',
+            label: 'Reset',
             onClick: () => {
-                settings.colors = [
-                    { r: 0,   g: 0,   b: 0,   a: 255 },
-                    { r: 50,  g: 50,  b: 50,  a: 255 },
-                    { r: 150, g: 150, b: 150, a: 255 },
-                    { r: 255, g: 255, b: 255, a: 255 },
-                ];
-                settings.weights = [0.01, 0.79, 0.20];
-                settings._colorsDirty = true;
-                location.reload();
+                settings._reinitAgents(settings.agentsCount);
             },
         },
     ]);
