@@ -3,6 +3,7 @@
 import { Simulation } from './simulation.js';
 import { Renderer } from './renderer.js';
 import { buildUI } from './ui.js';
+import { decodeShareHash, applyShareData } from './storage.js';
 
 // ── Settings ─────────────────────────────────────────────────
 
@@ -14,7 +15,7 @@ const settings = {
     mouseStrength: 2000,
     paused:        false,
     particleAlpha:  0.75,
-    particleRadius: 1.0,
+    particleRadius: 2.0,
 
     // Species colors (hex strings for UI, converted to RGBA for GPU)
     speciesColors: [
@@ -32,6 +33,12 @@ const settings = {
     mouseY: 0,
     mouseForce: 0,
 };
+
+// A share-link hash overrides defaults (including pre-seeded rules)
+{
+    const shareData = window.location.hash ? decodeShareHash(window.location.hash) : null;
+    applyShareData(settings, shareData);
+}
 
 const stats = { fps: 0, frameMs: 0 };
 

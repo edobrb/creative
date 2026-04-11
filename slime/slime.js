@@ -12,6 +12,7 @@ import {
 
 import { buildUI } from './ui.js';
 import { toPositionStops } from '../shared/gradient.js';
+import { decodeShareHash } from './storage.js';
 
 // ─── Settings (mutable, bound to UI) ────────────────────────
 
@@ -32,6 +33,21 @@ const settings = {
     weights: [1],
     _colorsDirty: true,
 };
+
+// A share-link hash overrides defaults
+{
+    const shareData = window.location.hash ? decodeShareHash(window.location.hash) : null;
+    if (shareData) {
+        if (shareData.ac != null) settings.agentsCount        = shareData.ac;
+        if (shareData.dt != null) settings.dt                 = shareData.dt;
+        if (shareData.as != null) settings.agentSpeed         = shareData.as;
+        if (shareData.ar != null) settings.agentRotationSpeed = shareData.ar;
+        if (shareData.df != null) settings.diffusionFactor    = shareData.df;
+        if (shareData.ef != null) settings.evaporationFactor  = shareData.ef;
+        if (shareData.c)  settings.colors  = shareData.c.map(([r, g, b]) => ({ r, g, b, a: 255 }));
+        if (shareData.w)  settings.weights = shareData.w;
+    }
+}
 
 // ─── Show error ──────────────────────────────────────────────
 

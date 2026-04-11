@@ -9,6 +9,7 @@ import {
     createStatsGrid, addSlider, createActionBar,
 } from '../shared/dashboard.js';
 import { GradientEditor } from '../shared/gradient-editor.js';
+import { encodeShareHash } from './storage.js';
 
 export function buildUI(container, settings, stats) {
     const dash = createDashboard(container, 'Slime Mold Simulation');
@@ -36,12 +37,30 @@ export function buildUI(container, settings, stats) {
     panel.appendChild(createSection('Color Ramp', buildColorControls(settings)));
 
     // Action bar
+    const SHARE_LABEL = '🔗 Share link';
     const { el: actionBarEl, buttons: actionButtons } = createActionBar([
         {
             label: '⏸ Pause',
             onClick: () => {
                 settings.paused = !settings.paused;
                 actionButtons['⏸ Pause'].textContent = settings.paused ? '▶ Resume' : '⏸ Pause';
+            },
+        },
+        {
+            label: SHARE_LABEL,
+            onClick: () => {
+                const shareBtn = actionButtons[SHARE_LABEL];
+                const hash = encodeShareHash(settings);
+                const url = `${location.origin}${location.pathname}#${hash}`;
+                navigator.clipboard.writeText(url).then(() => {
+                    shareBtn.textContent = 'Copied ✓';
+                    setTimeout(() => { shareBtn.textContent = SHARE_LABEL; }, 2000);
+                }).catch(() => {
+                    // Fallback: update the URL bar and let the user copy manually
+                    location.hash = hash;
+                    shareBtn.textContent = 'Link in URL bar ✓';
+                    setTimeout(() => { shareBtn.textContent = SHARE_LABEL; }, 2500);
+                });
             },
         },
         {

@@ -4,7 +4,7 @@ import {
     createDashboard, createFloatToggle, createSection,
     createStatsGrid, addSlider, createActionBar,
 } from '../shared/dashboard.js';
-import { getBookmarks, addBookmark, removeBookmark } from './storage.js';
+import { getBookmarks, addBookmark, removeBookmark, encodeShareHash } from './storage.js';
 
 /**
  * @param {HTMLElement} container
@@ -48,6 +48,7 @@ export function buildUI(container, settings, stats, callbacks) {
     panel.appendChild(createSection('Bookmarks', bookmarksWrap));
 
     // ── Actions ───────────────────────────────────────────────
+    const SHARE_LABEL = '🔗 Share link';
     const { el: actionBarEl, buttons: actionButtons } = createActionBar([
         {
             label: '⏸ Pause',
@@ -61,6 +62,22 @@ export function buildUI(container, settings, stats, callbacks) {
             onClick: () => {
                 callbacks.onRandomizeRules();
                 rebuildRulesMatrixUI(rulesWrap, settings, callbacks);
+            },
+        },
+        {
+            label: SHARE_LABEL,
+            onClick: () => {
+                const shareBtn = actionButtons[SHARE_LABEL];
+                const hash = encodeShareHash(settings);
+                const url = `${location.origin}${location.pathname}#${hash}`;
+                navigator.clipboard.writeText(url).then(() => {
+                    shareBtn.textContent = 'Copied ✓';
+                    setTimeout(() => { shareBtn.textContent = SHARE_LABEL; }, 2000);
+                }).catch(() => {
+                    location.hash = hash;
+                    shareBtn.textContent = 'Link in URL bar ✓';
+                    setTimeout(() => { shareBtn.textContent = SHARE_LABEL; }, 2500);
+                });
             },
         },
         {
