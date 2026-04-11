@@ -51,13 +51,6 @@ export function buildUI(container, settings, stats, callbacks) {
     const SHARE_LABEL = '🔗 Share link';
     const { el: actionBarEl, buttons: actionButtons } = createActionBar([
         {
-            label: '⏸ Pause',
-            onClick: () => {
-                settings.paused = !settings.paused;
-                actionButtons['⏸ Pause'].textContent = settings.paused ? '▶ Resume' : '⏸ Pause';
-            },
-        },
-        {
             label: '🎲 Randomize',
             onClick: () => {
                 callbacks.onRandomizeRules();
@@ -78,6 +71,13 @@ export function buildUI(container, settings, stats, callbacks) {
                     shareBtn.textContent = 'Link in URL bar ✓';
                     setTimeout(() => { shareBtn.textContent = SHARE_LABEL; }, 2500);
                 });
+            },
+        },
+        {
+            label: '⏸ Pause',
+            onClick: () => {
+                settings.paused = !settings.paused;
+                actionButtons['⏸ Pause'].textContent = settings.paused ? '▶ Resume' : '⏸ Pause';
             },
         },
         {

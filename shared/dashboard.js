@@ -21,7 +21,7 @@ export function createDashboard(container, title) {
     header.className = 'dash-header';
 
     const homeBtn = document.createElement('a');
-    homeBtn.href = '/';
+    homeBtn.href = '/creative';
     homeBtn.className = 'dash-home-btn';
     homeBtn.title = 'Home';
     homeBtn.textContent = '⌂';

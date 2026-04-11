@@ -256,12 +256,13 @@ input.stat-input:focus {
 
 .action-bar {
     display: flex;
+    flex-wrap: wrap;
     gap: 6px;
     margin-top: 14px;
     padding-top: 10px;
     border-top: 1px solid rgba(255,255,255,0.06);
 }
-.action-btn { flex: 1; justify-content: center; text-align: center; }
+.action-btn { flex: 1 1 calc(50% - 3px); justify-content: center; text-align: center; }
 
 /* ---------- Floating toggle button ---------- */
 

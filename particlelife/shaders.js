@@ -91,7 +91,7 @@ fn main(@builtin(global_invocation_id) gid : vec3<u32>) {
         var mdy = wrapDelta(params.mouseY - pos_i.y, params.by);
         let md2 = mdx * mdx + mdy * mdy;
         if (md2 > 1.0) {
-            let mf = params.mouseForce / pow(md2, 1.0 / 3.0);
+            let mf = params.mouseForce / pow(md2, 0.2);
             let mdir = vec2<f32>(mdx, mdy) / sqrt(md2);
             acc += mdir * mf;
         }

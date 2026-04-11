@@ -12,7 +12,7 @@ const settings = {
     speciesCount:  5,
     dt:            0.02,
     friction:      10,
-    mouseStrength: 2000,
+    mouseStrength: 5000,
     paused:        false,
     particleAlpha:  0.75,
     particleRadius: 2.0,
