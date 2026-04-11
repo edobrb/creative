@@ -1,0 +1,45 @@
+@import url('../shared/dashboard.css');
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    color: #e0e0e0;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* ---------- Canvas ---------- */
+
+#slime-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+}
+
+/* ---------- Error message ---------- */
+
+#error-message {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    font-size: 1.25rem;
+    text-align: center;
+    background: #111;
+    color: #f44;
+    z-index: 100;
+}

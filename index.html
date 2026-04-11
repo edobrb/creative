@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Coding Playground — WebGPU Experiments</title>
+    <meta name="description" content="A collection of interactive creative-coding experiments running in the browser with WebGPU. Explore fractals, simulations and more.">
+    <meta name="author" content="Edoardo Barbieri">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://edobrb.github.io/mandelbrot/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://edobrb.github.io/mandelbrot/">
+    <meta property="og:title" content="Creative Coding Playground — WebGPU Experiments">
+    <meta property="og:description" content="A collection of interactive creative-coding experiments running in the browser with WebGPU.">
+
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%; height: 100%;
+            background: #0a0a0c;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            color: #e0e0e0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            margin-bottom: 0.4rem;
+            color: #fff;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.45);
+            margin-bottom: 2.5rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.2s, border-color 0.2s, transform 0.15s;
+        }
+        .card:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.18);
+            transform: translateY(-3px);
+        }
+
+        .card-icon {
+            font-size: 2.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.35rem;
+        }
+
+        .card-desc {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.45);
+            line-height: 1.5;
+        }
+
+        .card-tag {
+            display: inline-block;
+            margin-top: 0.8rem;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.06);
+            border-radius: 4px;
+            padding: 2px 8px;
+            align-self: flex-start;
+        }
+
+        footer {
+            margin-top: 3rem;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.2);
+        }
+        footer a { color: rgba(255,255,255,0.35); }
+    </style>
+</head>
+<body>
+    <h1>Creative Coding Playground</h1>
+    <p class="subtitle">Interactive WebGPU experiments — pick one to explore</p>
+
+    <div class="grid">
+        <a class="card" href="mandelbrot/index.html">
+            <span class="card-icon">🌀</span>
+            <span class="card-title">Mandelbrot Set Explorer</span>
+            <span class="card-desc">
+                Infinite deep-zoom into the Mandelbrot set with perturbation theory and arbitrary precision. Customize colors and save bookmarks.
+            </span>
+            <span class="card-tag">Fractal · WebGPU</span>
+        </a>
+
+        <a class="card" href="slime/index.html">
+            <span class="card-icon">🧫</span>
+            <span class="card-title">Slime Mold Simulation</span>
+            <span class="card-desc">
+                Millions of agents self-organise into organic networks through simple diffusion and chemotaxis rules. Fully GPU-driven.
+            </span>
+            <span class="card-tag">Simulation · WebGPU</span>
+        </a>
+    </div>
+
+    <footer>
+        Built by <a href="https://github.com/edobrb">Edoardo Barbieri</a>
+    </footer>
+</body>
+</html>
