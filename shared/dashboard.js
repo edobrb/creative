@@ -17,10 +17,22 @@ export function createDashboard(container, title) {
     const panel = document.createElement('div');
     panel.className = 'dashboard';
 
+    const header = document.createElement('div');
+    header.className = 'dash-header';
+
+    const homeBtn = document.createElement('a');
+    homeBtn.href = '/';
+    homeBtn.className = 'dash-home-btn';
+    homeBtn.title = 'Home';
+    homeBtn.textContent = '⌂';
+
     const h1 = document.createElement('h1');
     h1.className = 'dash-title';
     h1.textContent = title;
-    panel.appendChild(h1);
+
+    header.appendChild(homeBtn);
+    header.appendChild(h1);
+    panel.appendChild(header);
 
     panel.addEventListener('wheel', (e) => e.stopPropagation());
     panel.addEventListener('mousedown', (e) => e.stopPropagation());
