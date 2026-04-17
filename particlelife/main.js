@@ -4,6 +4,7 @@ import { Simulation } from './simulation.js';
 import { Renderer } from './renderer.js';
 import { buildUI } from './ui.js';
 import { decodeShareHash, applyShareData } from './storage.js';
+import { EntropyAnalyzer, CriticalityOptimizer } from './entropy.js';
 
 // ── Settings ─────────────────────────────────────────────────
 
@@ -90,10 +91,16 @@ async function main() {
     const simulation = new Simulation(device, settings);
     const renderer = new Renderer(device, presentFormat);
 
+    // Entropy analysis and criticality optimizer
+    const entropyAnalyzer = new EntropyAnalyzer(16, 200);
+    const criticalityOptimizer = new CriticalityOptimizer();
+
     function fullReset() {
         resizeCanvas();
         simulation.reset(canvas.width, canvas.height);
         renderer.rebuild(simulation);
+        entropyAnalyzer.reset();
+        criticalityOptimizer.reset();
     }
 
     fullReset();
@@ -108,10 +115,14 @@ async function main() {
             resizeCanvas();
             simulation.reset(canvas.width, canvas.height);
             renderer.rebuild(simulation);
+            entropyAnalyzer.reset();
+            criticalityOptimizer.reset();
         },
         onRandomizeRules() {
             settings.rules = Simulation.randomRules(settings.speciesCount);
             simulation.uploadRules();
+            entropyAnalyzer.reset();
+            criticalityOptimizer.reset();
         },
         onRulesChanged() {
             simulation.uploadRules();
@@ -121,7 +132,7 @@ async function main() {
         },
     };
 
-    const ui = buildUI(document.body, settings, stats, callbacks);
+    const ui = buildUI(document.body, settings, stats, callbacks, entropyAnalyzer, criticalityOptimizer);
 
     // Mouse interaction
     let mouseDown = 0; // 0=none, 1=left, 2=right
@@ -191,6 +202,11 @@ async function main() {
 
         if (!settings.paused) {
             simulation.step();
+            entropyAnalyzer.maybeSample(device, simulation, settings);
+            criticalityOptimizer.step(entropyAnalyzer, settings, () => {
+                simulation.uploadRules();
+                if (ui.onRulesUpdatedExternally) ui.onRulesUpdatedExternally();
+            });
         }
 
         renderer.draw(ctx, simulation, canvas.width, canvas.height);

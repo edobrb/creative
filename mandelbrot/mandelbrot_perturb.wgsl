@@ -3,6 +3,10 @@
 // Uses Zhuoran's rebasing algorithm for glitch prevention.
 // Only ONE reference orbit (computed on CPU at arbitrary precision)
 // is needed; all pixels compute lightweight f32 delta orbits.
+//
+// Output: smooth (continuous) iteration count as f32.
+//         A negative value (-1.0) marks pixels inside the set.
+//         Coloring and lighting happen in the render fragment shader.
 // ============================================================
 
 struct Params {
@@ -14,7 +18,7 @@ struct Params {
     res_y        : u32,
     max_iter     : u32,
     ref_len      : u32,   // length of reference orbit (iterations before it escapes)
-    color_period : u32,   // LUT cycle length; escaped pixels use iter % color_period
+    _pad0        : u32,
     _pad1        : u32,
     _pad2        : u32,
     _pad3        : u32,
@@ -23,8 +27,7 @@ struct Params {
 @group(0) @binding(0) var<uniform> params : Params;
 @group(0) @binding(1) var<storage, read> ref_re : array<f32>;
 @group(0) @binding(2) var<storage, read> ref_im : array<f32>;
-@group(0) @binding(3) var<storage, read> color_lut : array<u32>;
-@group(0) @binding(4) var<storage, read_write> output : array<u32>;
+@group(0) @binding(3) var<storage, read_write> output : array<f32>;
 
 @compute @workgroup_size(16, 16)
 fn main(@builtin(global_invocation_id) gid : vec3<u32>) {
@@ -44,7 +47,13 @@ fn main(@builtin(global_invocation_id) gid : vec3<u32>) {
     var iter = 0u;
     var ref_iter = 0u;
 
-    let bailout_sq = 4.0f;
+    var z_re = 0.0f;
+    var z_im = 0.0f;
+    var z_mag2 = 0.0f;
+
+    // A larger bailout yields a smoother continuous escape value, which
+    // matters here because the fragment shader uses it as a height field.
+    let bailout_sq = 256.0f;
 
     loop {
         if (iter >= params.max_iter) {
@@ -55,8 +64,6 @@ fn main(@builtin(global_invocation_id) gid : vec3<u32>) {
         let Zr = ref_re[ref_iter];
         let Zi = ref_im[ref_iter];
 
-        // 2·dz·Z = (2·dz_re·Zr − 2·dz_im·Zi, 2·dz_re·Zi + 2·dz_im·Zr)
-        // dz²    = (dz_re² − dz_im², 2·dz_re·dz_im)
         let two_dz_re = 2.0 * dz_re;
         let two_dz_im = 2.0 * dz_im;
 
@@ -67,13 +74,11 @@ fn main(@builtin(global_invocation_id) gid : vec3<u32>) {
         dz_im = new_dz_im;
         ref_iter = ref_iter + 1u;
 
-        // z = Z[ref_iter] + dz  (full complex position)
-        let z_re = ref_re[ref_iter] + dz_re;
-        let z_im = ref_im[ref_iter] + dz_im;
+        z_re = ref_re[ref_iter] + dz_re;
+        z_im = ref_im[ref_iter] + dz_im;
 
-        let z_mag2 = z_re * z_re + z_im * z_im;
+        z_mag2 = z_re * z_re + z_im * z_im;
 
-        // Escape check
         if (z_mag2 > bailout_sq) {
             break;
         }
@@ -92,8 +97,13 @@ fn main(@builtin(global_invocation_id) gid : vec3<u32>) {
 
     let idx = py * params.res_x + px;
     if (iter >= params.max_iter) {
-        output[idx] = color_lut[params.color_period]; // inside color (last LUT slot)
+        output[idx] = -1.0;
     } else {
-        output[idx] = color_lut[iter % params.color_period];
+        // Continuous escape time: smooth_iter = iter + 1 − log2(log|z|)
+        // 0.5·log(|z|²) = log(|z|), so the formula below is equivalent.
+        let log_zn = 0.5 * log(max(z_mag2, 1.0001));
+        let nu = log(log_zn / 0.6931471805599453) / 0.6931471805599453; // log(2)
+        let smooth_iter = f32(iter) + 1.0 - nu;
+        output[idx] = max(smooth_iter, 0.0);
     }
 }

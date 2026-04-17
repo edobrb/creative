@@ -25,4 +25,11 @@ export const defaultSettings = {
     panSpeed: 0.05,
     keyZoomSpeed: 0.92,
     maxIterAdjustFactor: 1.5,
+
+    // 3D slope shading
+    lighting3D: true,
+    lightAzimuth: -0.785,    // radians, ≈ -45°  (top-left light)
+    lightElevation: 0.9,     // radians, ≈  52°
+    lightAmbient: 0.35,
+    lightHeightScale: 30.0,
 };

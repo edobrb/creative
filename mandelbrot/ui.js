@@ -42,6 +42,7 @@ export class UI {
         panel.appendChild(createSection('Coordinates', this._buildLive(), true));
         panel.appendChild(createSection('Iterations', this._buildRendering()));
         panel.appendChild(createSection('Colors', this._buildColors()));
+        panel.appendChild(createSection('3D shading', this._buildShading()));
         panel.appendChild(createSection('Bookmarks', this._buildBookmarks()));
         panel.appendChild(createSection('Controls', this._buildNavigation()));
         panel.appendChild(this._buildActionBar());
@@ -142,6 +143,49 @@ export class UI {
     _geNotify() {
         this.settings._colorVersion = (this.settings._colorVersion || 0) + 1;
         this.state.dirty = true;
+    }
+
+    // ─── 3D shading ──────────────────────────────────
+
+    _buildShading() {
+        const wrap = document.createElement('div');
+
+        const { el: modeRow, buttons: modeButtons } = createSegmentedControl(
+            'Lighting',
+            ['On', 'Off'],
+            this.settings.lighting3D ? 'On' : 'Off',
+            (value) => {
+                this.settings.lighting3D = (value === 'On');
+                this.state.dirty = true;
+            },
+        );
+        this._fields['lighting3D_On']  = modeButtons['On'];
+        this._fields['lighting3D_Off'] = modeButtons['Off'];
+        wrap.appendChild(modeRow);
+
+        const RAD = Math.PI / 180;
+        this._addSlider(wrap, 'Azimuth °', 'lightAzimuth',
+            -180, 180, 1, true,
+            () => Math.round(this.settings.lightAzimuth / RAD),
+            (v) => { this.settings.lightAzimuth = v * RAD; this.state.dirty = true; }
+        );
+        this._addSlider(wrap, 'Elevation °', 'lightElevation',
+            5, 89, 1, true,
+            () => Math.round(this.settings.lightElevation / RAD),
+            (v) => { this.settings.lightElevation = v * RAD; this.state.dirty = true; }
+        );
+        this._addSlider(wrap, 'Ambient', 'lightAmbient',
+            0.0, 1.0, 0.01, false,
+            () => this.settings.lightAmbient,
+            (v) => { this.settings.lightAmbient = v; this.state.dirty = true; }
+        );
+        this._addSlider(wrap, 'Relief', 'lightHeightScale',
+            0, 120, 1, false,
+            () => this.settings.lightHeightScale,
+            (v) => { this.settings.lightHeightScale = v; this.state.dirty = true; }
+        );
+
+        return wrap;
     }
 
     _geRandomize() {
@@ -360,6 +404,11 @@ export class UI {
             this.settings.panSpeed            = def.panSpeed;
             this.settings.keyZoomSpeed        = def.keyZoomSpeed;
             this.settings.maxIterAdjustFactor = def.maxIterAdjustFactor;
+            this.settings.lighting3D          = def.lighting3D;
+            this.settings.lightAzimuth        = def.lightAzimuth;
+            this.settings.lightElevation      = def.lightElevation;
+            this.settings.lightAmbient        = def.lightAmbient;
+            this.settings.lightHeightScale    = def.lightHeightScale;
             this.settings._colorVersion       = (this.settings._colorVersion || 0) + 1;
             this.state.baseMaxIter            = def.initialMaxIter;
             this.state.maxiterMode            = def.maxiterMode;
@@ -408,18 +457,26 @@ export class UI {
             if (this._fields[k + '_slider']) this._fields[k + '_slider'].value = v;
             if (this._fields[k + '_num'])    this._fields[k + '_num'].value = v;
         };
+        const RAD = Math.PI / 180;
         set('baseMaxIter', this.state.baseMaxIter);
         set('colorPeriod', this.settings.colorPeriod);
         set('zoomSpeed', this.settings.zoomSpeed);
         set('keyZoomSpeed', this.settings.keyZoomSpeed);
         set('panSpeed', this.settings.panSpeed);
+        set('lightAzimuth',     Math.round(this.settings.lightAzimuth / RAD));
+        set('lightElevation',   Math.round(this.settings.lightElevation / RAD));
+        set('lightAmbient',     this.settings.lightAmbient);
+        set('lightHeightScale', this.settings.lightHeightScale);
 
         // Segmented mode buttons
         ['Dynamic', 'Fixed'].forEach(v => {
             const btn = this._fields['maxiterMode_' + v];
             if (btn) btn.classList.toggle('active', this.state.maxiterMode === v);
         });
-
+        ['On', 'Off'].forEach(v => {
+            const btn = this._fields['lighting3D_' + v];
+            if (btn) btn.classList.toggle('active', this.settings.lighting3D === (v === 'On'));
+        });
     }
 
     update(state) {

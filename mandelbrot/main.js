@@ -63,6 +63,11 @@ async function main() {
         if (saved.panSpeed)            settings.panSpeed = saved.panSpeed;
         if (saved.keyZoomSpeed)        settings.keyZoomSpeed = saved.keyZoomSpeed;
         if (saved.maxIterAdjustFactor) settings.maxIterAdjustFactor = saved.maxIterAdjustFactor;
+        if (saved.lighting3D !== undefined)   settings.lighting3D = saved.lighting3D;
+        if (saved.lightAzimuth !== undefined) settings.lightAzimuth = saved.lightAzimuth;
+        if (saved.lightElevation !== undefined) settings.lightElevation = saved.lightElevation;
+        if (saved.lightAmbient !== undefined) settings.lightAmbient = saved.lightAmbient;
+        if (saved.lightHeightScale !== undefined) settings.lightHeightScale = saved.lightHeightScale;
     }
 
     // A share-link hash overrides both defaults and localStorage
@@ -78,6 +83,11 @@ async function main() {
         if (shareData.x)  settings.initialCenterX = shareData.x;
         if (shareData.y)  settings.initialCenterY = shareData.y;
         if (shareData.v)  settings.initialViewportSizeY = shareData.v;
+        if (shareData.l3 !== undefined) settings.lighting3D = !!shareData.l3;
+        if (shareData.la !== undefined) settings.lightAzimuth = shareData.la;
+        if (shareData.le !== undefined) settings.lightElevation = shareData.le;
+        if (shareData.lm !== undefined) settings.lightAmbient = shareData.lm;
+        if (shareData.lh !== undefined) settings.lightHeightScale = shareData.lh;
     }
 
     // Shared state — center is tracked in both BigFloat (precision) and f64 (display)
@@ -222,7 +232,13 @@ dirty: true,
 
             gpuBusy = true;
             renderStart = performance.now();
-            renderer.render(vpX, state.viewportSizeY, refOrbit.length, state.maxIter, settings.colorPeriod);
+            renderer.render(vpX, state.viewportSizeY, refOrbit.length, state.maxIter, settings.colorPeriod, {
+                enabled:     settings.lighting3D,
+                azimuth:     settings.lightAzimuth,
+                elevation:   settings.lightElevation,
+                ambient:     settings.lightAmbient,
+                heightScale: settings.lightHeightScale,
+            });
             renderer.device.queue.onSubmittedWorkDone().then(() => {
                 state.frameMs = performance.now() - renderStart;
                 gpuBusy = false;

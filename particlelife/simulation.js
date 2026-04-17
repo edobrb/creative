@@ -87,7 +87,7 @@ export class Simulation {
         }
         this.positionBuffer = device.createBuffer({
             size: positions.byteLength,
-            usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+            usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC,
             mappedAtCreation: true,
         });
         new Float32Array(this.positionBuffer.getMappedRange()).set(positions);
@@ -109,7 +109,7 @@ export class Simulation {
         }
         this.speciesBuffer = device.createBuffer({
             size: speciesArr.byteLength,
-            usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+            usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC,
             mappedAtCreation: true,
         });
         new Uint32Array(this.speciesBuffer.getMappedRange()).set(speciesArr);

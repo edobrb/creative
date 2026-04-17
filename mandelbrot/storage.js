@@ -19,6 +19,11 @@ export function saveSettings(settings, state) {
         maxIterAdjustFactor: settings.maxIterAdjustFactor,
         maxiterMode: state.maxiterMode,
         baseMaxIter: state.baseMaxIter,
+        lighting3D: settings.lighting3D,
+        lightAzimuth: settings.lightAzimuth,
+        lightElevation: settings.lightElevation,
+        lightAmbient: settings.lightAmbient,
+        lightHeightScale: settings.lightHeightScale,
     };
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(data));
 }
@@ -91,6 +96,11 @@ export function encodeShareHash(settings, state) {
         ps: settings.panSpeed,
         kz: settings.keyZoomSpeed,
         mf: settings.maxIterAdjustFactor,
+        l3: settings.lighting3D ? 1 : 0,
+        la: settings.lightAzimuth,
+        le: settings.lightElevation,
+        lm: settings.lightAmbient,
+        lh: settings.lightHeightScale,
     };
     const json = JSON.stringify(data);
     // btoa needs a binary string; use TextEncoder to support arbitrary characters
